@@ -92,12 +92,14 @@ export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
   };
 
   return (
-    <Card sx={{ mb: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+    <Card sx={{ mb: 3, backgroundColor: (theme) => theme.palette.background.paper }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Search size={20} />
-          Buscar Ativo B3
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <Search size={22} />
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            Buscar Ativo
+          </Typography>
+        </Box>
         
         <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
           <TextField
@@ -128,7 +130,7 @@ export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
         )}
 
         {assetSearch.searchResult && (
-          <Card sx={{ backgroundColor: 'white', border: '2px solid #4caf50' }}>
+          <Card sx={{ backgroundColor: (theme) => theme.palette.background.paper, border: '2px solid #4caf50' }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -155,7 +157,7 @@ export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
 
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={12} sm={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                  <Box sx={{ textAlign: 'center', p: 2, backgroundColor: (theme) => theme.palette.action.hover, borderRadius: 2 }}>
                     <DollarSign size={24} color="#1976d2" style={{ marginBottom: 8 }} />
                     <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2' }}>
                       {formatCurrency(assetSearch.searchResult.precoAtual)}
@@ -167,7 +169,7 @@ export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
                 </Grid>
                 
                 <Grid item xs={12} sm={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                  <Box sx={{ textAlign: 'center', p: 2, backgroundColor: (theme) => theme.palette.action.hover, borderRadius: 2 }}>
                     <TrendingUp size={24} color="#2e7d32" style={{ marginBottom: 8 }} />
                     <Typography variant="h6" sx={{ fontWeight: 700, color: '#2e7d32' }}>
                       {formatPercentage(assetSearch.searchResult.dividendYieldAnual)}
@@ -179,7 +181,7 @@ export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
                 </Grid>
                 
                 <Grid item xs={12} sm={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                  <Box sx={{ textAlign: 'center', p: 2, backgroundColor: (theme) => theme.palette.action.hover, borderRadius: 2 }}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                       Valor Total
                     </Typography>

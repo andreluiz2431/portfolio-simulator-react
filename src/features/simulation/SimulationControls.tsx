@@ -41,7 +41,7 @@ export const SimulationControls: React.FC = () => {
   const totalAportesSimulacao = totalAportesAnuais * simulationParams.periodoAnos;
 
   return (
-    <Card sx={{ mb: 3 }}>
+    <Card sx={{ mb: 3, backgroundColor: (theme) => theme.palette.background.paper }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
           <Settings size={24} />
@@ -89,15 +89,22 @@ export const SimulationControls: React.FC = () => {
           <Grid item xs={12} md={4}>
             <Box sx={{ 
               p: 2, 
-              backgroundColor: '#f5f5f5', 
+              backgroundColor: (theme) => theme.palette.background.paper, 
               borderRadius: 2,
               textAlign: 'center',
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
+              boxShadow: (theme) => theme.shadows[1],
+              border: (theme) => `1px solid ${theme.palette.divider}`,
             }}>
-              <Calendar size={24} color="#1976d2" style={{ margin: '0 auto 8px' }} />
+              {/** Corrigir cor do ícone para modo escuro/claro */}
+              <Calendar 
+                size={24} 
+                color={(typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? '#90caf9' : '#1976d2'} 
+                style={{ margin: '0 auto 8px' }} 
+              />
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 {simulationParams.periodoAnos * 12} meses
               </Typography>

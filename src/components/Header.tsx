@@ -1,10 +1,15 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Box, Chip } from '@mui/material';
-import { TrendingUp, PieChart } from 'lucide-react';
+import { AppBar, Toolbar, Typography, Box, Chip, IconButton, Tooltip } from '@mui/material';
+import { TrendingUp, PieChart, Moon, Sun } from 'lucide-react';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  mode: 'light' | 'dark';
+  onToggleTheme: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ mode, onToggleTheme }) => {
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#1a1a1a', boxShadow: 'none' }}>
+    <AppBar position="static" sx={{ backgroundColor: mode === 'dark' ? '#181a1b' : '#1a1a1a', boxShadow: 'none' }}>
       <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box
@@ -33,8 +38,12 @@ export const Header: React.FC = () => {
             }}
           />
         </Box>
-        
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip title={mode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}>
+            <IconButton color="inherit" onClick={onToggleTheme} size="large">
+              {mode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </IconButton>
+          </Tooltip>
           <TrendingUp size={20} color="#64b5f6" />
           <Typography variant="body2" sx={{ color: '#b0b0b0', fontWeight: 500 }}>
             Real-time B3 Market Data

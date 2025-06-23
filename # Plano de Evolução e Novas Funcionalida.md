@@ -10,7 +10,7 @@ Este documento descreve os próximos passos para evoluir o `portfolio-simulator-
 
 - [x] **Adicionar Animações de Carregamento (Skeletons)**: Enquanto a simulação é processada, exibir componentes "esqueleto" que imitam o layout do dashboard. Isso melhora a percepção de velocidade e feedback para o usuário.
 
-- [ ] **Criar um Tema "Dark Mode"**: Implementar um seletor que permita ao usuário alternar entre o tema claro (padrão) e um tema escuro, utilizando o sistema de theming do Material-UI.
+- [x] **Criar um Tema "Dark Mode"**: Implementar um seletor que permita ao usuário alternar entre o tema claro (padrão) e um tema escuro, utilizando o sistema de theming do Material-UI.
 
 ## ✨ Seção 2: Novas Funcionalidades
 
