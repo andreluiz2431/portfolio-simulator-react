@@ -121,57 +121,38 @@ export const SimulationControls: React.FC = () => {
         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
           Projeções de Crescimento Anual
         </Typography>
-
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Carteira Dividendos"
-              type="number"
-              value={(simulationParams.projecaoCrescimentoDividendos * 100).toFixed(1)}
-              onChange={(e) => handleParamChange('projecaoCrescimentoDividendos', Number(e.target.value) / 100)}
-              InputProps={{
-                startAdornment: <InputAdornment position="start"><TrendingUp size={16} /></InputAdornment>,
-                endAdornment: <InputAdornment position="end">% a.a.</InputAdornment>,
-              }}
-              inputProps={{ min: 0, max: 50, step: 0.1 }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: '#1976d2' },
-                  '&:hover fieldset': { borderColor: '#1976d2' },
-                  '&.Mui-focused fieldset': { borderColor: '#1976d2' },
-                },
-              }}
-            />
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              Crescimento conservador focado em dividendos
-            </Typography>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Carteira Crescimento"
-              type="number"
-              value={(simulationParams.projecaoCrescimentoPatrimonio * 100).toFixed(1)}
-              onChange={(e) => handleParamChange('projecaoCrescimentoPatrimonio', Number(e.target.value) / 100)}
-              InputProps={{
-                startAdornment: <InputAdornment position="start"><TrendingUp size={16} /></InputAdornment>,
-                endAdornment: <InputAdornment position="end">% a.a.</InputAdornment>,
-              }}
-              inputProps={{ min: 0, max: 50, step: 0.1 }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: '#2e7d32' },
-                  '&:hover fieldset': { borderColor: '#2e7d32' },
-                  '&.Mui-focused fieldset': { borderColor: '#2e7d32' },
-                },
-              }}
-            />
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              Crescimento agressivo focado em valorização
-            </Typography>
-          </Grid>
+          {portfolios.map((portfolio) => (
+            <Grid item xs={12} md={6} key={portfolio.id}>
+              <TextField
+                fullWidth
+                label={portfolio.nome}
+                type="number"
+                value={((simulationParams.projecoesCarteiras[portfolio.id] || 0) * 100).toFixed(1)}
+                onChange={(e) => updateSimulationParams({
+                  projecoesCarteiras: {
+                    ...simulationParams.projecoesCarteiras,
+                    [portfolio.id]: Number(e.target.value) / 100,
+                  },
+                })}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><TrendingUp size={16} /></InputAdornment>,
+                  endAdornment: <InputAdornment position="end">% a.a.</InputAdornment>,
+                }}
+                inputProps={{ min: 0, max: 50, step: 0.1 }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: portfolio.corTema },
+                    '&:hover fieldset': { borderColor: portfolio.corTema },
+                    '&.Mui-focused fieldset': { borderColor: portfolio.corTema },
+                  },
+                }}
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                Projeção anual para {portfolio.nome}
+              </Typography>
+            </Grid>
+          ))}
         </Grid>
 
         <Box sx={{ mt: 4 }}>

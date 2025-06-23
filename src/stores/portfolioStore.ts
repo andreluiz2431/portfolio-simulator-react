@@ -28,29 +28,33 @@ interface PortfolioStore {
   setAssetSearchState: (state: Partial<AssetSearchState>) => void;
   resetAssetSearch: () => void;
   setLoading: (isLoading: boolean) => void; // Add loading action
+  addPortfolio: (portfolio: Portfolio) => void;
+  removePortfolio: (portfolioId: string) => void;
 }
-
-const initialSimulationParams: SimulationParams = {
-  aporteMensal: 1000,
-  periodoAnos: 10,
-  projecaoCrescimentoDividendos: 0.06, // 6% annual growth
-  projecaoCrescimentoPatrimonio: 0.12, // 12% annual growth
-};
 
 const initialPortfolios: Portfolio[] = [
   {
     id: 'dividendos',
     nome: 'Carteira Dividendos',
     ativos: [],
-    corTema: '#1976d2', // Blue
+    corTema: '#1976d2',
   },
   {
     id: 'crescimento',
     nome: 'Carteira Crescimento',
     ativos: [],
-    corTema: '#2e7d32', // Green
+    corTema: '#2e7d32',
   },
 ];
+
+const initialSimulationParams: SimulationParams = {
+  aporteMensal: 1000,
+  periodoAnos: 10,
+  projecoesCarteiras: {
+    dividendos: 0.06,
+    crescimento: 0.12,
+  },
+};
 
 export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
   assets: {},
@@ -171,6 +175,31 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
   },
 
   setLoading: (isLoading: boolean) => set({ isLoading }),
+
+  addPortfolio: (portfolio: Portfolio) => {
+    set(state => ({ portfolios: [...state.portfolios, portfolio] }));
+    set(state => ({
+      simulationParams: {
+        ...state.simulationParams,
+        projecoesCarteiras: {
+          ...state.simulationParams.projecoesCarteiras,
+          [portfolio.id]: 0.10, // valor default
+        },
+      },
+    }));
+  },
+
+  removePortfolio: (portfolioId: string) => {
+    set(state => ({
+      portfolios: state.portfolios.filter(p => p.id !== portfolioId),
+      simulationParams: {
+        ...state.simulationParams,
+        projecoesCarteiras: Object.fromEntries(
+          Object.entries(state.simulationParams.projecoesCarteiras).filter(([id]) => id !== portfolioId)
+        ),
+      },
+    }));
+  },
 }));
 
 /**
@@ -231,10 +260,9 @@ function simulatePortfolios(
       }
       
       // Apply monthly growth
-      const crescimentoMensal = portfolio.id === 'dividendos' 
-        ? params.projecaoCrescimentoDividendos / 12
-        : params.projecaoCrescimentoPatrimonio / 12;
-      
+      const crescimentoMensal = params.projecoesCarteiras[portfolio.id]
+        ? params.projecoesCarteiras[portfolio.id] / 12
+        : 0.01; // valor default se não definido
       portfolio.ativos.forEach(ativo => {
         ativo.valorAtual *= (1 + crescimentoMensal);
       });
@@ -243,41 +271,30 @@ function simulatePortfolios(
       portfolio.valorAtivos = portfolio.ativos.reduce((sum, ativo) => sum + ativo.valorAtual, 0);
     });
     
-    // Record monthly data
-    const dividendosPortfolio = portfolioStates.find(p => p.id === 'dividendos')!;
-    const crescimentoPortfolio = portfolioStates.find(p => p.id === 'crescimento')!;
-    
-    dadosMensais.push({
-      mes,
-      patrimonioDividendos: dividendosPortfolio.valorAtivos,
-      patrimonioCrescimento: crescimentoPortfolio.valorAtivos,
-      dividendosRecebidosDividendos: dividendosPortfolio.totalDividendos,
-      dividendosRecebidosCrescimento: crescimentoPortfolio.totalDividendos,
-      totalAportadoDividendos: dividendosPortfolio.totalAportado,
-      totalAportadoCrescimento: crescimentoPortfolio.totalAportado,
+    // Record monthly data para todas as carteiras
+    const patrimonio: Record<string, number> = {};
+    const dividendosRecebidos: Record<string, number> = {};
+    const totalAportado: Record<string, number> = {};
+    portfolioStates.forEach(p => {
+      patrimonio[p.id] = p.valorAtivos;
+      dividendosRecebidos[p.id] = p.totalDividendos;
+      totalAportado[p.id] = p.totalAportado;
     });
+    dadosMensais.push({ mes, patrimonio, dividendosRecebidos, totalAportado });
   }
-  
-  // Calculate final summary
-  const dividendosPortfolio = portfolioStates.find(p => p.id === 'dividendos')!;
-  const crescimentoPortfolio = portfolioStates.find(p => p.id === 'crescimento')!;
-  
+  // Calculate final summary dinâmico
+  const resumoFinal: Record<string, any> = {};
+  portfolioStates.forEach(p => {
+    resumoFinal[p.id] = {
+      patrimonioFinal: p.valorAtivos,
+      totalAportado: p.totalAportado,
+      totalDividendos: p.totalDividendos,
+      rentabilidadeTotal: ((p.valorAtivos - p.totalAportado) / p.totalAportado) * 100,
+    };
+  });
   return {
     dadosMensais,
-    resumoFinal: {
-      dividendos: {
-        patrimonioFinal: dividendosPortfolio.valorAtivos,
-        totalAportado: dividendosPortfolio.totalAportado,
-        totalDividendos: dividendosPortfolio.totalDividendos,
-        rentabilidadeTotal: ((dividendosPortfolio.valorAtivos - dividendosPortfolio.totalAportado) / dividendosPortfolio.totalAportado) * 100,
-      },
-      crescimento: {
-        patrimonioFinal: crescimentoPortfolio.valorAtivos,
-        totalAportado: crescimentoPortfolio.totalAportado,
-        totalDividendos: crescimentoPortfolio.totalDividendos,
-        rentabilidadeTotal: ((crescimentoPortfolio.valorAtivos - crescimentoPortfolio.totalAportado) / crescimentoPortfolio.totalAportado) * 100,
-      },
-    },
+    resumoFinal,
   };
 }
 

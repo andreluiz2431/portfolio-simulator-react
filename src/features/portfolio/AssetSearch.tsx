@@ -24,16 +24,9 @@ interface AssetSearchProps {
 
 export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
   const [quantidade, setQuantidade] = useState<number>(100);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<'dividendos' | 'crescimento'>('dividendos');
+  const { portfolios, assetSearch, setAssetSearchState, resetAssetSearch, addAsset, addAssetToPortfolio } = usePortfolioStore();
+  const [selectedPortfolio, setSelectedPortfolio] = useState<string>(portfolios[0]?.id || '');
   
-  const {
-    assetSearch,
-    setAssetSearchState,
-    resetAssetSearch,
-    addAsset,
-    addAssetToPortfolio,
-  } = usePortfolioStore();
-
   const handleSearch = async () => {
     if (!assetSearch.searchTerm.trim()) return;
 
@@ -201,48 +194,36 @@ export const AssetSearch: React.FC<AssetSearchProps> = ({ onAssetSelect }) => {
                   sx={{ minWidth: 150 }}
                   inputProps={{ min: 1 }}
                 />
-                
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
-                    variant={selectedPortfolio === 'dividendos' ? 'contained' : 'outlined'}
-                    onClick={() => setSelectedPortfolio('dividendos')}
-                    sx={{ 
-                      backgroundColor: selectedPortfolio === 'dividendos' ? '#1976d2' : 'transparent',
-                      borderColor: '#1976d2',
-                      color: selectedPortfolio === 'dividendos' ? 'white' : '#1976d2',
-                    }}
-                  >
-                    Carteira Dividendos
-                  </Button>
-                  <Button
-                    variant={selectedPortfolio === 'crescimento' ? 'contained' : 'outlined'}
-                    onClick={() => setSelectedPortfolio('crescimento')}
-                    sx={{ 
-                      backgroundColor: selectedPortfolio === 'crescimento' ? '#2e7d32' : 'transparent',
-                      borderColor: '#2e7d32',
-                      color: selectedPortfolio === 'crescimento' ? 'white' : '#2e7d32',
-                    }}
-                  >
-                    Carteira Crescimento
-                  </Button>
-                </Box>
+                <TextField
+                  select
+                  label="Carteira"
+                  value={selectedPortfolio}
+                  onChange={e => setSelectedPortfolio(e.target.value)}
+                  sx={{ minWidth: 180 }}
+                  SelectProps={{ native: true }}
+                >
+                  {portfolios.map((p) => (
+                    <option key={p.id} value={p.id} style={{ color: p.corTema }}>
+                      {p.nome}
+                    </option>
+                  ))}
+                </TextField>
               </Box>
-
               <Button
                 variant="contained"
                 fullWidth
                 onClick={handleAddToPortfolio}
                 startIcon={<Plus />}
                 sx={{
-                  backgroundColor: selectedPortfolio === 'dividendos' ? '#1976d2' : '#2e7d32',
+                  backgroundColor: portfolios.find(p => p.id === selectedPortfolio)?.corTema || 'primary.main',
                   '&:hover': {
-                    backgroundColor: selectedPortfolio === 'dividendos' ? '#1565c0' : '#1b5e20',
+                    backgroundColor: portfolios.find(p => p.id === selectedPortfolio)?.corTema || 'primary.dark',
                   },
                   py: 1.5,
                   fontWeight: 600,
                 }}
               >
-                Adicionar à {selectedPortfolio === 'dividendos' ? 'Carteira Dividendos' : 'Carteira Crescimento'}
+                Adicionar à {portfolios.find(p => p.id === selectedPortfolio)?.nome || 'Carteira'}
               </Button>
             </CardContent>
           </Card>

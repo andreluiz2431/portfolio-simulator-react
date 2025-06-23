@@ -14,7 +14,7 @@ Este documento descreve os próximos passos para evoluir o `portfolio-simulator-
 
 ## ✨ Seção 2: Novas Funcionalidades
 
-- [ ] **Comparação de Múltiplas Carteiras**: Modificar a interface para permitir que o usuário adicione, configure e compare mais de duas carteiras de investimento na mesma simulação.
+- [x] **Comparação de Múltiplas Carteiras**: Modificar a interface para permitir que o usuário adicione, configure e compare mais de duas carteiras de investimento na mesma simulação.
 
 - [ ] **Salvar e Carregar Simulações**: Implementar uma funcionalidade para salvar os parâmetros de uma simulação (e talvez os resultados) no `localStorage` do navegador. Isso permite que o usuário não perca suas configurações ao fechar a aba.
 

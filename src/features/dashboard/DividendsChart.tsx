@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { SimulationDataPoint } from '../../types';
+import { usePortfolioStore } from '../../stores/portfolioStore';
 
 interface DividendsChartProps {
   data?: SimulationDataPoint[];
@@ -17,6 +18,8 @@ interface DividendsChartProps {
 }
 
 export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loading = false }) => {
+  const { portfolios } = usePortfolioStore();
+
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -51,14 +54,12 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loadi
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
         <defs>
-          <linearGradient id="colorDividendos" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#1976d2" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#1976d2" stopOpacity={0.1} />
-          </linearGradient>
-          <linearGradient id="colorCrescimento" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#2e7d32" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#2e7d32" stopOpacity={0.1} />
-          </linearGradient>
+          {portfolios.map((p) => (
+            <linearGradient key={p.id} id={`color${p.id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={p.corTema} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={p.corTema} stopOpacity={0.1} />
+            </linearGradient>
+          ))}
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
         <XAxis 
@@ -73,22 +74,18 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loadi
           fontSize={12}
         />
         <Tooltip formatter={formatTooltip} />
-        <Area
-          type="monotone"
-          dataKey="dividendosRecebidosDividendos"
-          name="Carteira Dividendos"
-          stroke="#1976d2"
-          fillOpacity={1}
-          fill="url(#colorDividendos)"
-        />
-        <Area
-          type="monotone"
-          dataKey="dividendosRecebidosCrescimento"
-          name="Carteira Crescimento"
-          stroke="#2e7d32"
-          fillOpacity={1}
-          fill="url(#colorCrescimento)"
-        />
+        {portfolios.map((p) => (
+          <Area
+            key={p.id}
+            type="monotone"
+            dataKey={`dividendosRecebidos.${p.id}`}
+            name={p.nome}
+            stroke={p.corTema}
+            fillOpacity={1}
+            fill={`url(#color${p.id})`}
+            isAnimationActive={false}
+          />
+        ))}
       </AreaChart>
     </ResponsiveContainer>
   );

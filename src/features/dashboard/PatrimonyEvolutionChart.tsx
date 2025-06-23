@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { SimulationDataPoint } from '../../types';
+import { usePortfolioStore } from '../../stores/portfolioStore';
 
 interface PatrimonyEvolutionChartProps {
   data?: SimulationDataPoint[];
@@ -21,6 +22,8 @@ export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = (
   data = [], 
   loading = false 
 }) => {
+  const { portfolios } = usePortfolioStore();
+
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -81,24 +84,19 @@ export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = (
           }}
         />
         <Legend />
-        <Line
-          type="monotone"
-          dataKey="patrimonioDividendos"
-          stroke="#1976d2"
-          strokeWidth={3}
-          dot={false}
-          name="Carteira Dividendos"
-          activeDot={{ r: 6, fill: '#1976d2' }}
-        />
-        <Line
-          type="monotone"
-          dataKey="patrimonioCrescimento"
-          stroke="#2e7d32"
-          strokeWidth={3}
-          dot={false}
-          name="Carteira Crescimento"
-          activeDot={{ r: 6, fill: '#2e7d32' }}
-        />
+        {portfolios.map((p) => (
+          <Line
+            key={p.id}
+            type="monotone"
+            dataKey={`patrimonio.${p.id}`}
+            stroke={p.corTema}
+            strokeWidth={3}
+            dot={false}
+            name={p.nome}
+            activeDot={{ r: 6, fill: p.corTema }}
+            isAnimationActive={false}
+          />
+        ))}
       </LineChart>
     </ResponsiveContainer>
   );

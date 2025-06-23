@@ -34,7 +34,7 @@ export interface PortfolioAsset {
 
 // Portfolio definition
 export interface Portfolio {
-  id: 'dividendos' | 'crescimento';
+  id: string; // agora pode ser qualquer string
   nome: string;
   ativos: PortfolioAsset[];
   corTema: string;
@@ -44,38 +44,27 @@ export interface Portfolio {
 export interface SimulationParams {
   aporteMensal: number;
   periodoAnos: number;
-  projecaoCrescimentoDividendos: number; // Decimal format (0.04 for 4%)
-  projecaoCrescimentoPatrimonio: number; // Decimal format (0.12 for 12%)
+  // Projeções por carteira, indexadas pelo id
+  projecoesCarteiras: Record<string, number>; // ex: { carteiraId: 0.12 }
 }
 
-// Monthly simulation data point
+// Monthly simulation data point para múltiplas carteiras
 export interface SimulationDataPoint {
   mes: number;
-  patrimonioDividendos: number;
-  patrimonioCrescimento: number;
-  dividendosRecebidosDividendos: number;
-  dividendosRecebidosCrescimento: number;
-  totalAportadoDividendos: number;
-  totalAportadoCrescimento: number;
+  patrimonio: Record<string, number>; // { [carteiraId]: valor }
+  dividendosRecebidos: Record<string, number>; // { [carteiraId]: valor }
+  totalAportado: Record<string, number>; // { [carteiraId]: valor }
 }
 
-// Complete simulation results
+// Complete simulation results para múltiplas carteiras
 export interface SimulationResult {
   dadosMensais: SimulationDataPoint[];
-  resumoFinal: {
-    dividendos: {
-      patrimonioFinal: number;
-      totalAportado: number;
-      totalDividendos: number;
-      rentabilidadeTotal: number;
-    };
-    crescimento: {
-      patrimonioFinal: number;
-      totalAportado: number;
-      totalDividendos: number;
-      rentabilidadeTotal: number;
-    };
-  };
+  resumoFinal: Record<string, {
+    patrimonioFinal: number;
+    totalAportado: number;
+    totalDividendos: number;
+    rentabilidadeTotal: number;
+  }>;
 }
 
 // UI State types
