@@ -7,6 +7,7 @@ import { PortfolioView } from './features/portfolio/PortfolioView';
 import { SimulationControls } from './features/simulation/SimulationControls';
 import { DashboardView } from './features/dashboard/DashboardView';
 import { PortfolioManager } from './features/portfolio/PortfolioManager';
+import { SimulationPersistenceButtons } from './components/SimulationPersistenceButtons';
 
 function App() {
   const [mode, setMode] = useState<'light' | 'dark'>(
@@ -82,6 +83,7 @@ function App() {
         <Header mode={mode} onToggleTheme={handleToggleTheme} />
         <Container maxWidth="lg" sx={{ py: 4 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <SimulationPersistenceButtons />
             <PortfolioManager />
             <AssetSearch onAssetSelect={handleAssetSelect} />
             <PortfolioView />

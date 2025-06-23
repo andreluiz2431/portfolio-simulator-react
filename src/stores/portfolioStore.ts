@@ -30,6 +30,8 @@ interface PortfolioStore {
   setLoading: (isLoading: boolean) => void; // Add loading action
   addPortfolio: (portfolio: Portfolio) => void;
   removePortfolio: (portfolioId: string) => void;
+  saveSimulation: () => void;
+  loadSimulation: () => void;
 }
 
 const initialPortfolios: Portfolio[] = [
@@ -199,6 +201,30 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         ),
       },
     }));
+  },
+
+  saveSimulation: () => {
+    const state = get();
+    const data = {
+      portfolios: state.portfolios,
+      simulationParams: state.simulationParams,
+      assets: state.assets,
+    };
+    localStorage.setItem('portfolio-simulator-save', JSON.stringify(data));
+  },
+  loadSimulation: () => {
+    const raw = localStorage.getItem('portfolio-simulator-save');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      set({
+        portfolios: data.portfolios,
+        simulationParams: data.simulationParams,
+        assets: data.assets,
+      });
+    } catch (e) {
+      // erro ao carregar
+    }
   },
 }));
 
