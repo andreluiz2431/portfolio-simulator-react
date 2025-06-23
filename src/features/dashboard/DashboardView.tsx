@@ -7,7 +7,28 @@ import { DividendsChart } from './DividendsChart';
 import { SummaryMetrics } from './SummaryMetrics';
 
 export const DashboardView: React.FC = () => {
-  const { simulationResult, simulationParams } = usePortfolioStore();
+  const { simulationResult, simulationParams, isLoading } = usePortfolioStore();
+
+  if (isLoading) {
+    return (
+      <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Carregando Simulação...
+          </Typography>
+        </Box>
+        <SummaryMetrics loading={true} />
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={6}>
+            <PatrimonyEvolutionChart loading={true} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <DividendsChart loading={true} />
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  }
 
   if (!simulationResult) {
     return (

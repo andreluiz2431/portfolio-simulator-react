@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, CardContent, Skeleton } from '@mui/material';
 import {
   AreaChart,
   Area,
@@ -11,10 +12,11 @@ import {
 import { SimulationDataPoint } from '../../types';
 
 interface DividendsChartProps {
-  data: SimulationDataPoint[];
+  data?: SimulationDataPoint[];
+  loading?: boolean;
 }
 
-export const DividendsChart: React.FC<DividendsChartProps> = ({ data }) => {
+export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loading = false }) => {
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -33,6 +35,17 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data }) => {
     const years = Math.floor(tickItem / 12);
     return `${years}a`;
   };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent>
+          <Skeleton variant="text" width={200} height={24} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" width="100%" height={300} />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -54,25 +67,16 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data }) => {
           stroke="#666"
           fontSize={12}
         />
-        <YAxis 
-          tickFormatter={(value) => formatCurrency(value)}
+        <YAxis
+          tickFormatter={formatCurrency}
           stroke="#666"
           fontSize={12}
         />
-        <Tooltip
-          formatter={formatTooltip}
-          labelFormatter={(label) => `Mês ${label}`}
-          contentStyle={{
-            backgroundColor: 'white',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          }}
-        />
+        <Tooltip formatter={formatTooltip} />
         <Area
           type="monotone"
           dataKey="dividendosRecebidosDividendos"
-          stackId="1"
+          name="Carteira Dividendos"
           stroke="#1976d2"
           fillOpacity={1}
           fill="url(#colorDividendos)"
@@ -80,7 +84,7 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data }) => {
         <Area
           type="monotone"
           dataKey="dividendosRecebidosCrescimento"
-          stackId="1"
+          name="Carteira Crescimento"
           stroke="#2e7d32"
           fillOpacity={1}
           fill="url(#colorCrescimento)"

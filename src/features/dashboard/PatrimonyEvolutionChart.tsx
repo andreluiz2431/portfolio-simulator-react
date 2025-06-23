@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, CardContent, Box, Skeleton } from '@mui/material';
 import {
   LineChart,
   Line,
@@ -12,10 +13,14 @@ import {
 import { SimulationDataPoint } from '../../types';
 
 interface PatrimonyEvolutionChartProps {
-  data: SimulationDataPoint[];
+  data?: SimulationDataPoint[];
+  loading?: boolean;
 }
 
-export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = ({ data }) => {
+export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = ({ 
+  data = [], 
+  loading = false 
+}) => {
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -38,6 +43,17 @@ export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = (
     }
     return `${years}a ${months}m`;
   };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent>
+          <Skeleton variant="text" width={200} height={24} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" width="100%" height={400} />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height={400}>

@@ -17,6 +17,7 @@ interface PortfolioStore {
   // UI State
   assetSearch: AssetSearchState;
   isSimulating: boolean;
+  isLoading: boolean; // Add loading state
   
   // Actions
   addAsset: (asset: Asset) => void;
@@ -26,6 +27,7 @@ interface PortfolioStore {
   runSimulation: () => void;
   setAssetSearchState: (state: Partial<AssetSearchState>) => void;
   resetAssetSearch: () => void;
+  setLoading: (isLoading: boolean) => void; // Add loading action
 }
 
 const initialSimulationParams: SimulationParams = {
@@ -62,7 +64,8 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     searchResult: null,
   },
   isSimulating: false,
-
+  isLoading: false,
+  
   addAsset: (asset: Asset) => {
     set(state => ({
       assets: {
@@ -166,6 +169,8 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
       },
     });
   },
+
+  setLoading: (isLoading: boolean) => set({ isLoading }),
 }));
 
 /**
