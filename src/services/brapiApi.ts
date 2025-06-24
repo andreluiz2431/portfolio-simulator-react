@@ -49,6 +49,7 @@ export class BrapiApiService {
       }
       
       const apiAsset = data.results[0];
+      //console.log('API Asset:', apiAsset);
       
       // Validate essential data
       if (!apiAsset.regularMarketPrice || apiAsset.regularMarketPrice <= 0) {
