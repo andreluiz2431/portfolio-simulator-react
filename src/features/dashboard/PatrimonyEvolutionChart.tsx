@@ -37,8 +37,7 @@ export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = (
   };
 
   const formatTooltip = (value: number, name: string) => {
-    const label = name === 'patrimonioDividendos' ? 'Carteira Dividendos' : 'Carteira Crescimento';
-    return [formatCurrency(value), label];
+    return [formatCurrency(value), name];
   };
 
   const formatXAxis = (tickItem: number) => {
