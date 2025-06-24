@@ -12,15 +12,18 @@ import {
 } from 'recharts';
 import { SimulationDataPoint } from '../../types';
 import { usePortfolioStore } from '../../stores/portfolioStore';
+import { PeriodoFiltro } from './chartUtils';
 
 interface PatrimonyEvolutionChartProps {
   data?: SimulationDataPoint[];
   loading?: boolean;
+  periodo?: PeriodoFiltro;
 }
 
 export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = ({ 
   data = [], 
-  loading = false 
+  loading = false,
+  periodo = 'mensal',
 }) => {
   const { portfolios } = usePortfolioStore();
 
@@ -39,12 +42,16 @@ export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = (
   };
 
   const formatXAxis = (tickItem: number) => {
-    const years = Math.floor(tickItem / 12);
-    const months = tickItem % 12;
-    if (months === 0) {
-      return `${years}a`;
+    if (periodo === 'anual') {
+      return `Ano ${tickItem}`;
     }
-    return `${years}a ${months}m`;
+    if (periodo === 'total') {
+      return 'Total';
+    }
+    // padrão: mensal
+    const years = Math.floor((tickItem - 1) / 12) + 1;
+    const months = ((tickItem - 1) % 12) + 1;
+    return `${months}/${years}`;
   };
 
   if (loading) {
@@ -75,7 +82,14 @@ export const PatrimonyEvolutionChart: React.FC<PatrimonyEvolutionChartProps> = (
         />
         <Tooltip
           formatter={formatTooltip}
-          labelFormatter={(label) => `Mês ${label}`}
+          labelFormatter={(label) => {
+            if (periodo === 'anual') return `Ano ${label}`;
+            if (periodo === 'total') return 'Total';
+            // padrão: mensal
+            const years = Math.floor((label - 1) / 12) + 1;
+            const months = ((label - 1) % 12) + 1;
+            return `Mês ${months}/${years}`;
+          }}
           contentStyle={{
             backgroundColor: 'white',
             border: '1px solid #ccc',

@@ -11,13 +11,15 @@ import {
 } from 'recharts';
 import { SimulationDataPoint } from '../../types';
 import { usePortfolioStore } from '../../stores/portfolioStore';
+import { PeriodoFiltro } from './chartUtils';
 
 interface DividendsChartProps {
   data?: SimulationDataPoint[];
   loading?: boolean;
+  periodo?: PeriodoFiltro;
 }
 
-export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loading = false }) => {
+export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loading = false, periodo = 'mensal' }) => {
   const { portfolios } = usePortfolioStore();
 
   const formatCurrency = (value: number): string => {
@@ -35,8 +37,16 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loadi
   };
 
   const formatXAxis = (tickItem: number) => {
-    const years = Math.floor(tickItem / 12);
-    return `${years}a`;
+    if (periodo === 'anual') {
+      return `Ano ${tickItem}`;
+    }
+    if (periodo === 'total') {
+      return 'Total';
+    }
+    // padrão: mensal
+    const years = Math.floor((tickItem - 1) / 12) + 1;
+    const months = ((tickItem - 1) % 12) + 1;
+    return `${months}/${years}`;
   };
 
   if (loading) {
@@ -73,7 +83,17 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loadi
           stroke="#666"
           fontSize={12}
         />
-        <Tooltip formatter={formatTooltip} />
+        <Tooltip 
+          formatter={formatTooltip}
+          labelFormatter={(label) => {
+            if (periodo === 'anual') return `Ano ${label}`;
+            if (periodo === 'total') return 'Total';
+            // padrão: mensal
+            const years = Math.floor((label - 1) / 12) + 1;
+            const months = ((label - 1) % 12) + 1;
+            return `Mês ${months}/${years}`;
+          }}
+        />
         {portfolios.map((p) => (
           <Area
             key={p.id}

@@ -18,7 +18,7 @@ Este documento descreve os próximos passos para evoluir o `portfolio-simulator-
 
 - [x] **Salvar e Carregar Simulações**: Implementar uma funcionalidade para salvar os parâmetros de uma simulação (e talvez os resultados) no `localStorage` do navegador. Isso permite que o usuário não perca suas configurações ao fechar a aba.
 
-- [ ] **Detalhar Gráficos por Período**: Adicionar um filtro (ex: botões "Anual", "Total") para que o usuário possa visualizar os dados dos gráficos de forma consolidada por ano, além da visão mensal acumulada.
+- [x] **Detalhar Gráficos por Período**: Adicionar um filtro (ex: botões "Anual", "Total") para que o usuário possa visualizar os dados dos gráficos de forma consolidada por ano, além da visão mensal acumulada.
 
 - [ ] **Exportar Relatório da Simulação**: Criar um botão "Exportar" que gere um relatório simples em formato PDF ou CSV com os dados do `SummaryMetrics` e a tabela de evolução mensal.
 

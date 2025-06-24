@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Typography, Card, CardContent, Box, Chip } from '@mui/material';
 import { TrendingUp, DollarSign, PieChart, Calendar } from 'lucide-react';
 import { usePortfolioStore } from '../../stores/portfolioStore';
 import { PatrimonyEvolutionChart } from './PatrimonyEvolutionChart';
 import { DividendsChart } from './DividendsChart';
 import { SummaryMetrics } from './SummaryMetrics';
+import { agruparDadosPorPeriodo, PeriodoFiltro } from './chartUtils';
 
 export const DashboardView: React.FC = () => {
   const { simulationResult, simulationParams, isLoading } = usePortfolioStore();
+
+  // Estado do filtro de período
+  const [periodo, setPeriodo] = useState<PeriodoFiltro>('mensal');
 
   if (isLoading) {
     return (
@@ -46,6 +50,9 @@ export const DashboardView: React.FC = () => {
     );
   }
 
+  // Aplica o filtro aos dados mensais
+  const dadosFiltrados = agruparDadosPorPeriodo(simulationResult.dadosMensais, periodo);
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -68,6 +75,28 @@ export const DashboardView: React.FC = () => {
         </Box>
       </Box>
 
+      {/* Filtro de Período */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Chip
+          label="Mensal"
+          color={periodo === 'mensal' ? 'primary' : 'default'}
+          variant={periodo === 'mensal' ? 'filled' : 'outlined'}
+          onClick={() => setPeriodo('mensal')}
+        />
+        <Chip
+          label="Anual"
+          color={periodo === 'anual' ? 'primary' : 'default'}
+          variant={periodo === 'anual' ? 'filled' : 'outlined'}
+          onClick={() => setPeriodo('anual')}
+        />
+        <Chip
+          label="Total"
+          color={periodo === 'total' ? 'primary' : 'default'}
+          variant={periodo === 'total' ? 'filled' : 'outlined'}
+          onClick={() => setPeriodo('total')}
+        />
+      </Box>
+
       <Grid container spacing={3}>
         {/* Summary Metrics */}
         <Grid item xs={12}>
@@ -84,7 +113,7 @@ export const DashboardView: React.FC = () => {
                   Evolução do Patrimônio
                 </Typography>
               </Box>
-              <PatrimonyEvolutionChart data={simulationResult.dadosMensais} />
+              <PatrimonyEvolutionChart data={dadosFiltrados} periodo={periodo} />
             </CardContent>
           </Card>
         </Grid>
@@ -99,7 +128,7 @@ export const DashboardView: React.FC = () => {
                   Dividendos Acumulados
                 </Typography>
               </Box>
-              <DividendsChart data={simulationResult.dadosMensais} />
+              <DividendsChart data={dadosFiltrados} periodo={periodo} />
             </CardContent>
           </Card>
         </Grid>
