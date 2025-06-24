@@ -1,4 +1,5 @@
 import { Asset, BrapiAssetResponse } from '../types';
+import { getDividendYield } from './fundament_api';
 
 const BRAPI_BASE_URL = import.meta.env.VITE_BRAPI_BASE_URL || 'https://brapi.dev/api';
 const BRAPI_API_KEY = import.meta.env.VITE_BRAPI_API_KEY;
@@ -66,7 +67,21 @@ export class BrapiApiService {
         marketCap: apiAsset.marketCap,
         logoUrl: apiAsset.logourl
       };
-      
+
+      // Buscar DY do Fundamentus e sobrescrever se disponível
+      const fundamentDy = await getDividendYield(cleanTicker);
+      console.log('DY Fundamentus para', cleanTicker, ':', fundamentDy);
+      if (fundamentDy && fundamentDy.trim() !== '' && fundamentDy !== '0%' && fundamentDy !== '-') {
+        // Converte string tipo "12,0%" para decimal (0.12)
+        const dyNumber = Number(fundamentDy.replace('%', '').replace(',', '.'));
+        if (!isNaN(dyNumber) && dyNumber > 0) {
+          asset.dividendYieldAnual = dyNumber / 100;
+        } else {
+          asset.dividendYieldAnual = 0;
+        }
+      } else {
+        asset.dividendYieldAnual = 0;
+      }
       return asset;
     } catch (error) {
       console.error('Error fetching asset data:', error);
