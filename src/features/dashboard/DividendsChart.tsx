@@ -32,8 +32,7 @@ export const DividendsChart: React.FC<DividendsChartProps> = ({ data = [], loadi
   };
 
   const formatTooltip = (value: number, name: string) => {
-    const label = name === 'dividendosRecebidosDividendos' ? 'Carteira Dividendos' : 'Carteira Crescimento';
-    return [formatCurrency(value), label];
+    return [formatCurrency(value), name];
   };
 
   const formatXAxis = (tickItem: number) => {
