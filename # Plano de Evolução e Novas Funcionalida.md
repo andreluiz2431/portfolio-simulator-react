@@ -20,7 +20,7 @@ Este documento descreve os próximos passos para evoluir o `portfolio-simulator-
 
 - [x] **Detalhar Gráficos por Período**: Adicionar um filtro (ex: botões "Anual", "Total") para que o usuário possa visualizar os dados dos gráficos de forma consolidada por ano, além da visão mensal acumulada.
 
-- [ ] **Exportar Relatório da Simulação**: Criar um botão "Exportar" que gere um relatório simples em formato PDF ou CSV com os dados do `SummaryMetrics` e a tabela de evolução mensal.
+- [x] **Exportar Relatório da Simulação**: Criar um botão "Exportar" que gere um relatório simples em formato PDF ou CSV com os dados do `SummaryMetrics` e a tabela de evolução mensal.
 
 ## 🧠 Seção 3: Lógica da Simulação e Dados
 

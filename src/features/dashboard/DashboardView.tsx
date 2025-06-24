@@ -6,9 +6,48 @@ import { PatrimonyEvolutionChart } from './PatrimonyEvolutionChart';
 import { DividendsChart } from './DividendsChart';
 import { SummaryMetrics } from './SummaryMetrics';
 import { agruparDadosPorPeriodo, PeriodoFiltro } from './chartUtils';
+import { saveAs } from 'file-saver';
+
+function exportarRelatorioCSV(simulationResult: any, portfolios: any) {
+  if (!simulationResult) return;
+  // Resumo
+  let csv = 'Resumo das Carteiras\n';
+  const resumo = simulationResult.resumoFinal;
+  const metricas = ['patrimonioFinal', 'totalAportado', 'totalDividendos', 'rentabilidadeTotal'];
+  const metricasLabel = ['Patrimônio Final', 'Total Aportado', 'Dividendos Recebidos', 'Rentabilidade Total (%)'];
+  csv += 'Carteira,' + metricasLabel.join(',') + '\n';
+  Object.entries(resumo).forEach(([carteiraId, data]: any) => {
+    const nome = portfolios.find((p: any) => p.id === carteiraId)?.nome || carteiraId;
+    csv += nome + ',' + metricas.map((k) => data[k]).join(',') + '\n';
+  });
+  csv += '\n';
+  // Evolução Mensal
+  csv += 'Evolução Mensal\n';
+  const dadosMensais = simulationResult.dadosMensais;
+  // Cabeçalho
+  let header = ['Mês'];
+  portfolios.forEach((p: any) => {
+    header.push(`Patrimônio ${p.nome}`);
+    header.push(`Dividendos ${p.nome}`);
+    header.push(`Aportado ${p.nome}`);
+  });
+  csv += header.join(',') + '\n';
+  dadosMensais.forEach((item: any) => {
+    let row = [item.mes];
+    portfolios.forEach((p: any) => {
+      row.push(item.patrimonio[p.id] ?? '');
+      row.push(item.dividendosRecebidos[p.id] ?? '');
+      row.push(item.totalAportado[p.id] ?? '');
+    });
+    csv += row.join(',') + '\n';
+  });
+  // Download
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  saveAs(blob, 'relatorio_simulacao.csv');
+}
 
 export const DashboardView: React.FC = () => {
-  const { simulationResult, simulationParams, isLoading } = usePortfolioStore();
+  const { simulationResult, simulationParams, isLoading, portfolios } = usePortfolioStore();
 
   // Estado do filtro de período
   const [periodo, setPeriodo] = useState<PeriodoFiltro>('mensal');
@@ -75,8 +114,8 @@ export const DashboardView: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Filtro de Período */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      {/* Filtro de Período + Exportar */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
         <Chip
           label="Mensal"
           color={periodo === 'mensal' ? 'primary' : 'default'}
@@ -95,6 +134,14 @@ export const DashboardView: React.FC = () => {
           variant={periodo === 'total' ? 'filled' : 'outlined'}
           onClick={() => setPeriodo('total')}
         />
+        <Box sx={{ flex: 1 }} />
+        <button
+          style={{ padding: '8px 16px', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, fontWeight: 600, cursor: 'pointer' }}
+          onClick={() => exportarRelatorioCSV(simulationResult, portfolios)}
+          disabled={!simulationResult}
+        >
+          Exportar Relatório (CSV)
+        </button>
       </Box>
 
       <Grid container spacing={3}>
